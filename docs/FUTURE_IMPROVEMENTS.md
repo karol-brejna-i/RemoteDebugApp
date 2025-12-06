@@ -63,6 +63,34 @@ Improved command input experience.
 
 ---
 
+### 1.4 Connection Address History
+
+Remember and quickly reconnect to previously used devices.
+
+**Features:**
+- Dropdown showing recently used IP addresses/hostnames
+- Persistent address history across browser sessions
+- Optional device nicknames (e.g., "Kitchen ESP32" → 192.168.1.45)
+- Auto-suggest while typing in address field
+- Remove individual entries from history
+- Clear all history option
+- Last successful connection shown as default
+
+**UI Suggestions:**
+```
+┌───────────────────────────────────────┐
+│ [192.168.1.100         ▼] [Connect]  │
+├───────────────────────────────────────┤
+│ Recent:                               │
+│   192.168.1.100  (Kitchen ESP32)     │
+│   bramator.local                      │
+│   192.168.1.45   (Garage sensor)     │
+│   [Clear history]                     │
+└───────────────────────────────────────┘
+```
+
+---
+
 ## Priority 2: Medium Value, Medium Effort
 
 ### 2.1 Metrics Dashboard

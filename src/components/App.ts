@@ -196,7 +196,9 @@ export class App {
    * Handle incoming message from device
    */
   private handleMessage(data: string): void {
-    if (this.isPaused) return;
+    if (this.isPaused) {
+      return;
+    }
 
     const messages = this.parser.parse(data);
     
@@ -206,6 +208,11 @@ export class App {
       } else {
         // Only show messages at or above current level
         if (msg.level && msg.level >= this.currentLevel) {
+          this.console.appendMessage(msg);
+          this.messageCount++;
+          this.footer.setMessageCount(this.messageCount);
+        } else if (!msg.level) {
+          // Show messages without level (system messages, unknown format)
           this.console.appendMessage(msg);
           this.messageCount++;
           this.footer.setMessageCount(this.messageCount);
@@ -364,7 +371,15 @@ export class App {
     this.toolbar.setLevel(level);
     
     if (this.connectionState === 'connected') {
-      this.ws.send(String(level));
+      // Send level letter command to device: v, d, i, w, e
+      const levelCommands: Record<DebugLevel, string> = {
+        1: 'v',  // Verbose
+        2: 'd',  // Debug
+        3: 'i',  // Info
+        4: 'w',  // Warning
+        5: 'e',  // Error
+      };
+      this.ws.send(levelCommands[level]);
     }
   }
 

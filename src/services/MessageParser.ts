@@ -96,11 +96,11 @@ export class MessageParser {
       };
     }
 
-    // Unknown format - still display it
+    // Unknown format - still display it (but strip any ANSI codes)
     return {
       id,
       type: 'unknown',
-      content: line,
+      content: this.stripAnsiCodes(line),
       raw: line,
       receivedAt,
     };
@@ -117,13 +117,17 @@ export class MessageParser {
     core?: number;
     content: string;
   } | null {
-    // Strip ANSI codes first
-    const stripped = this.stripAnsiCodes(line);
+    // Check if line has ANSI codes (either real or literal bracket codes)
+    // eslint-disable-next-line no-control-regex
+    const hasRealAnsi = /\x1b\[[0-9;]*m/.test(line);
+    const hasLiteralAnsi = /\[[0-9;]*m/.test(line);
     
-    // Check if original had ANSI codes
-    if (stripped === line) {
+    if (!hasRealAnsi && !hasLiteralAnsi) {
       return null; // No ANSI codes found
     }
+
+    // Strip ANSI codes first
+    const stripped = this.stripAnsiCodes(line);
 
     // Parse the stripped content
     return this.parsePlainMessage(stripped);
@@ -131,7 +135,7 @@ export class MessageParser {
 
   /**
    * Parse plain debug message (no ANSI)
-   * Format: (<LEVEL> t:<ms>ms) (<func>)(<core>) <msg>
+   * Format: (<LEVEL> t:<ms>ms) [(<func>)][(<core>)] <msg>
    */
   private parsePlainMessage(line: string): {
     level: DebugLevel;
@@ -140,30 +144,40 @@ export class MessageParser {
     core?: number;
     content: string;
   } | null {
-    // Try to match: (V t:123ms) (funcName)(C0) message
-    const regex = /^\(([VDIWE])\s+t:(\d+)ms\)\s+\((\w+)\)\(C(\d)\)\s+(.+)$/;
-    const match = line.match(regex);
+    // Try to match full format: (V t:123ms) (funcName)(C0) message
+    const fullRegex = /^\(([VDIWE])\s+t:(\d+)ms\)\s+\((\w+)\)\(C(\d)\)\s+(.+)$/;
+    let match = line.match(fullRegex);
+    
+    if (match) {
+      return {
+        level: DEBUG_LEVEL_LETTERS[match[1]] || DebugLevel.Info,
+        timestamp: parseInt(match[2], 10),
+        function: match[3],
+        core: parseInt(match[4], 10),
+        content: match[5],
+      };
+    }
+
+    // Try format with timestamp but no function/core: (V t:123ms) message
+    const timestampRegex = /^\(([VDIWE])\s+t:(\d+)ms\)\s+(.+)$/;
+    match = line.match(timestampRegex);
 
     if (match) {
-      const [, levelChar, timestamp, func, core, content] = match;
       return {
-        level: DEBUG_LEVEL_LETTERS[levelChar] || DebugLevel.Info,
-        timestamp: parseInt(timestamp, 10),
-        function: func,
-        core: parseInt(core, 10),
-        content: content,
+        level: DEBUG_LEVEL_LETTERS[match[1]] || DebugLevel.Info,
+        timestamp: parseInt(match[2], 10),
+        content: match[3],
       };
     }
 
     // Simpler format: (V) message or [V] message
-    const simpleRegex = /^[\[(]([VDIWE])[\])]\s*(.+)$/;
-    const simpleMatch = line.match(simpleRegex);
+    const basicRegex = /^[\[(]([VDIWE])[\])]\s*(.+)$/;
+    match = line.match(basicRegex);
 
-    if (simpleMatch) {
-      const [, levelChar, content] = simpleMatch;
+    if (match) {
       return {
-        level: DEBUG_LEVEL_LETTERS[levelChar] || DebugLevel.Info,
-        content: content,
+        level: DEBUG_LEVEL_LETTERS[match[1]] || DebugLevel.Info,
+        content: match[2],
       };
     }
 
@@ -230,10 +244,18 @@ export class MessageParser {
 
   /**
    * Strip ANSI escape codes from text
+   * Handles both real escape codes (\x1b[...m) and literal [...m] codes
    */
   private stripAnsiCodes(text: string): string {
+    // First try to strip real ANSI escape codes
     // eslint-disable-next-line no-control-regex
-    return text.replace(/\x1b\[[0-9;]*m/g, '');
+    let result = text.replace(/\x1b\[[0-9;]*m/g, '');
+    
+    // Also strip literal bracket codes like [1;33m or [0m
+    // These appear when the escape character wasn't transmitted properly
+    result = result.replace(/\[[0-9;]*m/g, '');
+    
+    return result;
   }
 
   /**

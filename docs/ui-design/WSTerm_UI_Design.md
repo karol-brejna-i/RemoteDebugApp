@@ -288,4 +288,4 @@ You can also save this SVG as a standalone file (e.g. `WSTerm_logo.svg`) and ref
     <tspan fill="#38BDF8">WS</tspan><tspan fill="#E5E7EB">Term</tspan>
   </text>
 </svg>
-```
+```I

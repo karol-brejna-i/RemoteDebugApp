@@ -14,6 +14,8 @@ export class Console {
   private autoScroll = true;
   private fontSize = 13;
   private messageIdCounter = 0;
+  private pendingMessages: ParsedMessage[] = [];
+  private renderScheduled = false;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -50,6 +52,7 @@ export class Console {
 
   /**
    * Append a parsed message to the console
+   * Uses batched rendering to prevent browser freeze
    */
   appendMessage(message: ParsedMessage): void {
     this.messages.push(message);
@@ -57,7 +60,8 @@ export class Console {
     // Apply filter
     if (this.matchesFilter(message)) {
       this.filteredMessages.push(message);
-      this.renderMessage(message);
+      this.pendingMessages.push(message);
+      this.scheduleRender();
     }
 
     // Limit buffer size
@@ -66,6 +70,43 @@ export class Console {
       this.filteredMessages = this.messages.filter(m => this.matchesFilter(m));
       this.rerender();
     }
+  }
+
+  /**
+   * Schedule a batched render using requestAnimationFrame
+   */
+  private scheduleRender(): void {
+    if (this.renderScheduled) return;
+    
+    this.renderScheduled = true;
+    requestAnimationFrame(() => {
+      this.flushPendingMessages();
+      this.renderScheduled = false;
+    });
+  }
+
+  /**
+   * Render all pending messages in a batch
+   */
+  private flushPendingMessages(): void {
+    if (this.pendingMessages.length === 0) return;
+
+    // Remove welcome message if present
+    const welcome = this.container.querySelector('.console__welcome');
+    if (welcome) {
+      welcome.remove();
+    }
+
+    // Create document fragment for batch DOM insertion
+    const fragment = document.createDocumentFragment();
+    
+    for (const message of this.pendingMessages) {
+      const row = this.createMessageRow(message);
+      fragment.appendChild(row);
+    }
+
+    this.container.appendChild(fragment);
+    this.pendingMessages = [];
 
     if (this.autoScroll) {
       this.scrollToBottom();
@@ -88,9 +129,9 @@ export class Console {
   }
 
   /**
-   * Render a single message to the DOM
+   * Create a message row element (without appending to DOM)
    */
-  private renderMessage(message: ParsedMessage): void {
+  private createMessageRow(message: ParsedMessage): HTMLElement {
     const row = document.createElement('div');
     row.className = `console__message console__message--${message.type}`;
     row.dataset.id = message.id;
@@ -125,13 +166,20 @@ export class Console {
     parts.push(`<span class="msg-content">${this.escapeHtml(message.content)}</span>`);
 
     row.innerHTML = parts.join(' ');
-    
+    return row;
+  }
+
+  /**
+   * Render a single message to the DOM (for individual adds)
+   */
+  private renderMessage(message: ParsedMessage): void {
     // Remove welcome message if present
     const welcome = this.container.querySelector('.console__welcome');
     if (welcome) {
       welcome.remove();
     }
 
+    const row = this.createMessageRow(message);
     this.container.appendChild(row);
   }
 
