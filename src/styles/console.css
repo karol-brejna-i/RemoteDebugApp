@@ -1,0 +1,166 @@
+/**
+ * Console Styles
+ */
+
+.console {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+}
+
+.console__content {
+  height: 100%;
+  padding: 8px 16px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Welcome message */
+.console__welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.console__welcome p {
+  margin: 4px 0;
+}
+
+.console__welcome-hint {
+  font-size: 12px;
+  color: var(--text-disabled);
+}
+
+/* Scroll to bottom button */
+.console__scroll-btn {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  font-size: 12px;
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all var(--transition-fast);
+  z-index: 10;
+}
+
+.console__scroll-btn:hover {
+  background-color: var(--bg-hover);
+}
+
+/* Message rows */
+.console__message {
+  padding: 2px 0;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.console__message:hover {
+  background-color: var(--bg-hover);
+}
+
+/* Message types */
+.console__message--system {
+  color: var(--text-secondary);
+}
+
+.console__message--unknown {
+  color: var(--text-primary);
+}
+
+.console__message--protocol {
+  color: var(--text-disabled);
+  font-size: 11px;
+}
+
+/* Level-specific colors */
+.console__message--level-1 { color: var(--color-verbose); }
+.console__message--level-2 { color: var(--color-debug); }
+.console__message--level-3 { color: var(--color-info); }
+.console__message--level-4 { color: var(--color-warning); }
+.console__message--level-5 { color: var(--color-error); }
+
+/* Message parts */
+.msg-time {
+  color: var(--text-disabled);
+  margin-right: 8px;
+}
+
+.msg-level {
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.msg-level--1 { color: var(--color-verbose); }
+.msg-level--2 { color: var(--color-debug); }
+.msg-level--3 { color: var(--color-info); }
+.msg-level--4 { color: var(--color-warning); }
+.msg-level--5 { color: var(--color-error); }
+
+.msg-func,
+.msg-core {
+  color: var(--text-secondary);
+  font-size: 0.9em;
+}
+
+.msg-content {
+  /* Inherits color from parent level class */
+}
+
+/* Profiler backgrounds */
+.console__message--profiler-fast {
+  background-color: var(--profiler-fast);
+}
+
+.console__message--profiler-medium {
+  background-color: var(--profiler-medium);
+}
+
+.console__message--profiler-slow {
+  background-color: var(--profiler-slow);
+}
+
+.console__message--profiler-very-slow {
+  background-color: var(--profiler-very-slow);
+}
+
+/* System messages with asterisk */
+.console__message--system::before {
+  content: '';
+}
+
+/* Selection */
+.console__content::selection,
+.console__message::selection {
+  background-color: var(--bg-active);
+}
+
+/* Scrollbar styling */
+.console__content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.console__content::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+.console__content::-webkit-scrollbar-thumb {
+  background: var(--bg-hover);
+  border-radius: 5px;
+}
+
+.console__content::-webkit-scrollbar-thumb:hover {
+  background: var(--text-disabled);
+}

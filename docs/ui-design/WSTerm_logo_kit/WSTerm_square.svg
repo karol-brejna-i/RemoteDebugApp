@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="40" fill="#0B0F1A"/>
+  <rect x="68" y="88" width="120" height="80" rx="10" ry="10"
+        fill="#050609" stroke="#38BDF8" stroke-width="3"/>
+  <text x="85" y="135" fill="#E5E7EB"
+        font-family="JetBrains Mono, monospace" font-size="24">&gt;_</text>
+  <circle cx="150" cy="115" r="8" fill="#38BDF8"/>
+  <circle cx="165" cy="135" r="8" fill="#38BDF8"/>
+</svg>

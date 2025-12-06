@@ -1,0 +1,830 @@
+{
+  "sent": [
+    {
+      "timestamp": 2148,
+      "data": "$app"
+    },
+    {
+      "timestamp": 15591,
+      "data": "?"
+    },
+    {
+      "timestamp": 19885,
+      "data": "help"
+    },
+    {
+      "timestamp": 24426,
+      "data": "?"
+    },
+    {
+      "timestamp": 28376,
+      "data": "d"
+    },
+    {
+      "timestamp": 28763,
+      "data": "c"
+    },
+    {
+      "timestamp": 30628,
+      "data": "c"
+    },
+    {
+      "timestamp": 38006,
+      "data": "c"
+    },
+    {
+      "timestamp": 42988,
+      "data": "status"
+    },
+    {
+      "timestamp": 46292,
+      "data": "i"
+    },
+    {
+      "timestamp": 46756,
+      "data": "w"
+    },
+    {
+      "timestamp": 48072,
+      "data": "e"
+    },
+    {
+      "timestamp": 49278,
+      "data": "d"
+    }
+  ],
+  "received": [
+    {
+      "timestamp": 2148,
+      "data": "$app:I",
+      "escaped": "$app:I"
+    },
+    {
+      "timestamp": 2158,
+      "data": "",
+      "escaped": ""
+    },
+    {
+      "timestamp": 2160,
+      "data": "$app:V:4.0.0:ESP32:M:217356u:D:N",
+      "escaped": "$app:V:4.0.0:ESP32:M:217356u:D:N"
+    },
+    {
+      "timestamp": 2165,
+      "data": "$app:L:1",
+      "escaped": "$app:L:1"
+    },
+    {
+      "timestamp": 15639,
+      "data": "* Debug: Command received: ?",
+      "escaped": "* Debug: Command received: ?"
+    },
+    {
+      "timestamp": 15644,
+      "data": "*** Remote debug - over telnet - for ESP32 - version 4.0.0",
+      "escaped": "*** Remote debug - over telnet - for ESP32 - version 4.0.0"
+    },
+    {
+      "timestamp": 15660,
+      "data": "* Host name: bramator IP:192.168.0.218 Mac address:D8:A0:1D:57:CA:58",
+      "escaped": "* Host name: bramator IP:192.168.0.218 Mac address:D8:A0:1D:57:CA:58"
+    },
+    {
+      "timestamp": 15661,
+      "data": "* Free Heap RAM: 217592",
+      "escaped": "* Free Heap RAM: 217592"
+    },
+    {
+      "timestamp": 15661,
+      "data": "* ESP SDK version: v4.4.7-dirty",
+      "escaped": "* ESP SDK version: v4.4.7-dirty"
+    },
+    {
+      "timestamp": 15661,
+      "data": "******************************************************",
+      "escaped": "******************************************************"
+    },
+    {
+      "timestamp": 15662,
+      "data": "* Commands:",
+      "escaped": "* Commands:"
+    },
+    {
+      "timestamp": 15662,
+      "data": "    ? or help -> display these help of commands",
+      "escaped": "    ? or help -> display these help of commands"
+    },
+    {
+      "timestamp": 15667,
+      "data": "    q -> quit (close this connection)",
+      "escaped": "    q -> quit (close this connection)"
+    },
+    {
+      "timestamp": 15670,
+      "data": "    m -> display memory available",
+      "escaped": "    m -> display memory available"
+    },
+    {
+      "timestamp": 15673,
+      "data": "    v -> set debug level to verbose",
+      "escaped": "    v -> set debug level to verbose"
+    },
+    {
+      "timestamp": 15676,
+      "data": "    d -> set debug level to debug",
+      "escaped": "    d -> set debug level to debug"
+    },
+    {
+      "timestamp": 15679,
+      "data": "    i -> set debug level to info",
+      "escaped": "    i -> set debug level to info"
+    },
+    {
+      "timestamp": 15685,
+      "data": "    w -> set debug level to warning",
+      "escaped": "    w -> set debug level to warning"
+    },
+    {
+      "timestamp": 15686,
+      "data": "    e -> set debug level to errors",
+      "escaped": "    e -> set debug level to errors"
+    },
+    {
+      "timestamp": 15690,
+      "data": "    s -> set debug silence on/off",
+      "escaped": "    s -> set debug silence on/off"
+    },
+    {
+      "timestamp": 15696,
+      "data": "    l -> show debug level",
+      "escaped": "    l -> show debug level"
+    },
+    {
+      "timestamp": 15703,
+      "data": "    t -> show time (millis)",
+      "escaped": "    t -> show time (millis)"
+    },
+    {
+      "timestamp": 15704,
+      "data": "    timeout -> set connection timeout (sec, 0 = disabled)",
+      "escaped": "    timeout -> set connection timeout (sec, 0 = disabled)"
+    },
+    {
+      "timestamp": 15705,
+      "data": "    profiler:",
+      "escaped": "    profiler:"
+    },
+    {
+      "timestamp": 15705,
+      "data": "      p      -> show time between actual and last message (in millis)",
+      "escaped": "      p      -> show time between actual and last message (in millis)"
+    },
+    {
+      "timestamp": 15728,
+      "data": "      p min  -> show only if time is this minimal",
+      "escaped": "      p min  -> show only if time is this minimal"
+    },
+    {
+      "timestamp": 15729,
+      "data": "      P time -> set debug level to profiler",
+      "escaped": "      P time -> set debug level to profiler"
+    },
+    {
+      "timestamp": 15730,
+      "data": "    c -> show colors",
+      "escaped": "    c -> show colors"
+    },
+    {
+      "timestamp": 15730,
+      "data": "    filter:",
+      "escaped": "    filter:"
+    },
+    {
+      "timestamp": 15731,
+      "data": "          filter <string> -> show only debugs with this",
+      "escaped": "          filter <string> -> show only debugs with this"
+    },
+    {
+      "timestamp": 15731,
+      "data": "          nofilter        -> disable the filter",
+      "escaped": "          nofilter        -> disable the filter"
+    },
+    {
+      "timestamp": 15732,
+      "data": "    reset -> reset the ESP32",
+      "escaped": "    reset -> reset the ESP32"
+    },
+    {
+      "timestamp": 15786,
+      "data": "",
+      "escaped": ""
+    },
+    {
+      "timestamp": 15786,
+      "data": "    * Project commands:",
+      "escaped": "    * Project commands:"
+    },
+    {
+      "timestamp": 15787,
+      "data": "",
+      "escaped": ""
+    },
+    {
+      "timestamp": 15790,
+      "data": "    relay -- trigger relay (activate gate)",
+      "escaped": "    relay -- trigger relay (activate gate)"
+    },
+    {
+      "timestamp": 15792,
+      "data": "    status -- dump device status",
+      "escaped": "    status -- dump device status"
+    },
+    {
+      "timestamp": 15798,
+      "data": "    version -- show version information",
+      "escaped": "    version -- show version information"
+    },
+    {
+      "timestamp": 15799,
+      "data": "    inputX -- where X is GPIO number (i.e.1, 2, 6, 9, 20) -- set given GPIO to INPUT mode",
+      "escaped": "    inputX -- where X is GPIO number (i.e.1, 2, 6, 9, 20) -- set given GPIO to INPUT mode"
+    },
+    {
+      "timestamp": 15806,
+      "data": "    outputX -- where X is GPIO number (i.e.1, 2, 6, 9, 20) -- set given GPIO to OUTPUT mode",
+      "escaped": "    outputX -- where X is GPIO number (i.e.1, 2, 6, 9, 20) -- set given GPIO to OUTPUT mode"
+    },
+    {
+      "timestamp": 15807,
+      "data": "    setX -- set GPIO's X state to high",
+      "escaped": "    setX -- set GPIO's X state to high"
+    },
+    {
+      "timestamp": 15811,
+      "data": "    unsetX -- unset GPIO's X state to low",
+      "escaped": "    unsetX -- unset GPIO's X state to low"
+    },
+    {
+      "timestamp": 15812,
+      "data": "    ",
+      "escaped": "    "
+    },
+    {
+      "timestamp": 15821,
+      "data": "",
+      "escaped": ""
+    },
+    {
+      "timestamp": 15844,
+      "data": "* Please type the command and press enter to execute.(? or h for this help)",
+      "escaped": "* Please type the command and press enter to execute.(? or h for this help)"
+    },
+    {
+      "timestamp": 15850,
+      "data": "***",
+      "escaped": "***"
+    },
+    {
+      "timestamp": 19940,
+      "data": "* Debug: Command received: help",
+      "escaped": "* Debug: Command received: help"
+    },
+    {
+      "timestamp": 19960,
+      "data": "[1;33m(I t:1389111ms) (executeCommand)(C1) executeCommand: help",
+      "escaped": "[1;33m(I t:1389111ms) (executeCommand)(C1) executeCommand: help"
+    },
+    {
+      "timestamp": 19961,
+      "data": "[0m[1;36m(W t:1389112ms) (executeAction)(C1) Unknown action type: 8",
+      "escaped": "[0m[1;36m(W t:1389112ms) (executeAction)(C1) Unknown action type: 8"
+    },
+    {
+      "timestamp": 19962,
+      "data": "[0m[1;36m(W t:1389113ms) (processCmdRemoteDebug)(C1) Unknown command: help",
+      "escaped": "[0m[1;36m(W t:1389113ms) (processCmdRemoteDebug)(C1) Unknown command: help"
+    },
+    {
+      "timestamp": 24552,
+      "data": "[0m* Debug: Command received: ?",
+      "escaped": "[0m* Debug: Command received: ?"
+    },
+    {
+      "timestamp": 24555,
+      "data": "*** Remote debug - over telnet - for ESP32 - version 4.0.0",
+      "escaped": "*** Remote debug - over telnet - for ESP32 - version 4.0.0"
+    },
+    {
+      "timestamp": 24556,
+      "data": "* Host name: bramator IP:192.168.0.218 Mac address:D8:A0:1D:57:CA:58",
+      "escaped": "* Host name: bramator IP:192.168.0.218 Mac address:D8:A0:1D:57:CA:58"
+    },
+    {
+      "timestamp": 24568,
+      "data": "* Free Heap RAM: 217496",
+      "escaped": "* Free Heap RAM: 217496"
+    },
+    {
+      "timestamp": 24571,
+      "data": "* ESP SDK version: v4.4.7-dirty",
+      "escaped": "* ESP SDK version: v4.4.7-dirty"
+    },
+    {
+      "timestamp": 24574,
+      "data": "******************************************************",
+      "escaped": "******************************************************"
+    },
+    {
+      "timestamp": 24577,
+      "data": "* Commands:",
+      "escaped": "* Commands:"
+    },
+    {
+      "timestamp": 24579,
+      "data": "    ? or help -> display these help of commands",
+      "escaped": "    ? or help -> display these help of commands"
+    },
+    {
+      "timestamp": 24581,
+      "data": "    q -> quit (close this connection)",
+      "escaped": "    q -> quit (close this connection)"
+    },
+    {
+      "timestamp": 24584,
+      "data": "    m -> display memory available",
+      "escaped": "    m -> display memory available"
+    },
+    {
+      "timestamp": 24586,
+      "data": "    v -> set debug level to verbose",
+      "escaped": "    v -> set debug level to verbose"
+    },
+    {
+      "timestamp": 24589,
+      "data": "    d -> set debug level to debug",
+      "escaped": "    d -> set debug level to debug"
+    },
+    {
+      "timestamp": 24591,
+      "data": "    i -> set debug level to info",
+      "escaped": "    i -> set debug level to info"
+    },
+    {
+      "timestamp": 24593,
+      "data": "    w -> set debug level to warning",
+      "escaped": "    w -> set debug level to warning"
+    },
+    {
+      "timestamp": 24602,
+      "data": "    e -> set debug level to errors",
+      "escaped": "    e -> set debug level to errors"
+    },
+    {
+      "timestamp": 24605,
+      "data": "    s -> set debug silence on/off",
+      "escaped": "    s -> set debug silence on/off"
+    },
+    {
+      "timestamp": 24607,
+      "data": "    l -> show debug level",
+      "escaped": "    l -> show debug level"
+    },
+    {
+      "timestamp": 24610,
+      "data": "    t -> show time (millis)",
+      "escaped": "    t -> show time (millis)"
+    },
+    {
+      "timestamp": 24612,
+      "data": "    timeout -> set connection timeout (sec, 0 = disabled)",
+      "escaped": "    timeout -> set connection timeout (sec, 0 = disabled)"
+    },
+    {
+      "timestamp": 24614,
+      "data": "    profiler:",
+      "escaped": "    profiler:"
+    },
+    {
+      "timestamp": 24616,
+      "data": "      p      -> show time between actual and last message (in millis)",
+      "escaped": "      p      -> show time between actual and last message (in millis)"
+    },
+    {
+      "timestamp": 24617,
+      "data": "      p min  -> show only if time is this minimal",
+      "escaped": "      p min  -> show only if time is this minimal"
+    },
+    {
+      "timestamp": 24619,
+      "data": "      P time -> set debug level to profiler",
+      "escaped": "      P time -> set debug level to profiler"
+    },
+    {
+      "timestamp": 24620,
+      "data": "    c -> show colors",
+      "escaped": "    c -> show colors"
+    },
+    {
+      "timestamp": 24622,
+      "data": "    filter:",
+      "escaped": "    filter:"
+    },
+    {
+      "timestamp": 24632,
+      "data": "          filter <string> -> show only debugs with this",
+      "escaped": "          filter <string> -> show only debugs with this"
+    },
+    {
+      "timestamp": 24640,
+      "data": "          nofilter        -> disable the filter",
+      "escaped": "          nofilter        -> disable the filter"
+    },
+    {
+      "timestamp": 24642,
+      "data": "    reset -> reset the ESP32",
+      "escaped": "    reset -> reset the ESP32"
+    },
+    {
+      "timestamp": 24644,
+      "data": "",
+      "escaped": ""
+    },
+    {
+      "timestamp": 24644,
+      "data": "    * Project commands:",
+      "escaped": "    * Project commands:"
+    },
+    {
+      "timestamp": 24651,
+      "data": "",
+      "escaped": ""
+    },
+    {
+      "timestamp": 24651,
+      "data": "    relay -- trigger relay (activate gate)",
+      "escaped": "    relay -- trigger relay (activate gate)"
+    },
+    {
+      "timestamp": 24653,
+      "data": "    status -- dump device status",
+      "escaped": "    status -- dump device status"
+    },
+    {
+      "timestamp": 24654,
+      "data": "    version -- show version information",
+      "escaped": "    version -- show version information"
+    },
+    {
+      "timestamp": 24655,
+      "data": "    inputX -- where X is GPIO number (i.e.1, 2, 6, 9, 20) -- set given GPIO to INPUT mode",
+      "escaped": "    inputX -- where X is GPIO number (i.e.1, 2, 6, 9, 20) -- set given GPIO to INPUT mode"
+    },
+    {
+      "timestamp": 24658,
+      "data": "    outputX -- where X is GPIO number (i.e.1, 2, 6, 9, 20) -- set given GPIO to OUTPUT mode",
+      "escaped": "    outputX -- where X is GPIO number (i.e.1, 2, 6, 9, 20) -- set given GPIO to OUTPUT mode"
+    },
+    {
+      "timestamp": 24659,
+      "data": "    setX -- set GPIO's X state to high",
+      "escaped": "    setX -- set GPIO's X state to high"
+    },
+    {
+      "timestamp": 24666,
+      "data": "    unsetX -- unset GPIO's X state to low",
+      "escaped": "    unsetX -- unset GPIO's X state to low"
+    },
+    {
+      "timestamp": 24671,
+      "data": "    ",
+      "escaped": "    "
+    },
+    {
+      "timestamp": 24673,
+      "data": "",
+      "escaped": ""
+    },
+    {
+      "timestamp": 24674,
+      "data": "* Please type the command and press enter to execute.(? or h for this help)",
+      "escaped": "* Please type the command and press enter to execute.(? or h for this help)"
+    },
+    {
+      "timestamp": 24685,
+      "data": "***",
+      "escaped": "***"
+    },
+    {
+      "timestamp": 28433,
+      "data": "* Debug: Command received: d",
+      "escaped": "* Debug: Command received: d"
+    },
+    {
+      "timestamp": 28437,
+      "data": "* Debug level set to Debug",
+      "escaped": "* Debug level set to Debug"
+    },
+    {
+      "timestamp": 28446,
+      "data": "$app:L:2",
+      "escaped": "$app:L:2"
+    },
+    {
+      "timestamp": 28843,
+      "data": "* Bug workaround: ignoring command repeating",
+      "escaped": "* Bug workaround: ignoring command repeating"
+    },
+    {
+      "timestamp": 30685,
+      "data": "* Debug: Command received: c",
+      "escaped": "* Debug: Command received: c"
+    },
+    {
+      "timestamp": 30690,
+      "data": "* Show colors: Off",
+      "escaped": "* Show colors: Off"
+    },
+    {
+      "timestamp": 38060,
+      "data": "* Debug: Command received: c",
+      "escaped": "* Debug: Command received: c"
+    },
+    {
+      "timestamp": 38063,
+      "data": "* Show colors: On",
+      "escaped": "* Show colors: On"
+    },
+    {
+      "timestamp": 43078,
+      "data": "* Debug: Command received: status",
+      "escaped": "* Debug: Command received: status"
+    },
+    {
+      "timestamp": 43090,
+      "data": "[1;33m(I t:1412254ms) (executeCommand)(C1) executeCommand: status",
+      "escaped": "[1;33m(I t:1412254ms) (executeCommand)(C1) executeCommand: status"
+    },
+    {
+      "timestamp": 43365,
+      "data": "[0m[1;33m(I t:1412258ms) (executeAction)(C1) Executing action: QUERY_STATUS",
+      "escaped": "[0m[1;33m(I t:1412258ms) (executeAction)(C1) Executing action: QUERY_STATUS"
+    },
+    {
+      "timestamp": 43373,
+      "data": "[0m[1;33m(I t:1412534ms) {",
+      "escaped": "[0m[1;33m(I t:1412534ms) {"
+    },
+    {
+      "timestamp": 43380,
+      "data": "[0m[1;33m(I t:1412544ms)   \"time\": {",
+      "escaped": "[0m[1;33m(I t:1412544ms)   \"time\": {"
+    },
+    {
+      "timestamp": 43382,
+      "data": "[0m[1;33m(I t:1412544ms)     \"uptime_s\": 1412,",
+      "escaped": "[0m[1;33m(I t:1412544ms)     \"uptime_s\": 1412,"
+    },
+    {
+      "timestamp": 43385,
+      "data": "[0m[1;33m(I t:1412545ms)     \"idle_ms\": 364236",
+      "escaped": "[0m[1;33m(I t:1412545ms)     \"idle_ms\": 364236"
+    },
+    {
+      "timestamp": 43387,
+      "data": "[0m[1;33m(I t:1412545ms)   },",
+      "escaped": "[0m[1;33m(I t:1412545ms)   },"
+    },
+    {
+      "timestamp": 43404,
+      "data": "[0m[1;33m(I t:1412545ms)   \"cpu\": {",
+      "escaped": "[0m[1;33m(I t:1412545ms)   \"cpu\": {"
+    },
+    {
+      "timestamp": 43405,
+      "data": "[0m[1;33m(I t:1412545ms)     \"temp_c\": 29.44444,",
+      "escaped": "[0m[1;33m(I t:1412545ms)     \"temp_c\": 29.44444,"
+    },
+    {
+      "timestamp": 43407,
+      "data": "[0m[1;33m(I t:1412545ms)     \"freq_mhz\": 240",
+      "escaped": "[0m[1;33m(I t:1412545ms)     \"freq_mhz\": 240"
+    },
+    {
+      "timestamp": 43408,
+      "data": "[0m[1;33m(I t:1412545ms)   },",
+      "escaped": "[0m[1;33m(I t:1412545ms)   },"
+    },
+    {
+      "timestamp": 43412,
+      "data": "[0m[1;33m(I t:1412545ms)   \"memory\": {",
+      "escaped": "[0m[1;33m(I t:1412545ms)   \"memory\": {"
+    },
+    {
+      "timestamp": 43414,
+      "data": "[0m[1;33m(I t:1412545ms)     \"heap_free_b\": 214776,",
+      "escaped": "[0m[1;33m(I t:1412545ms)     \"heap_free_b\": 214776,"
+    },
+    {
+      "timestamp": 43415,
+      "data": "[0m[1;33m(I t:1412545ms)     \"heap_total_b\": 317372,",
+      "escaped": "[0m[1;33m(I t:1412545ms)     \"heap_total_b\": 317372,"
+    },
+    {
+      "timestamp": 43417,
+      "data": "[0m[1;33m(I t:1412546ms)     \"heap_min_free_b\": 202908",
+      "escaped": "[0m[1;33m(I t:1412546ms)     \"heap_min_free_b\": 202908"
+    },
+    {
+      "timestamp": 43430,
+      "data": "[0m[1;33m(I t:1412546ms)   },",
+      "escaped": "[0m[1;33m(I t:1412546ms)   },"
+    },
+    {
+      "timestamp": 43432,
+      "data": "[0m[1;33m(I t:1412546ms)   \"wifi\": {",
+      "escaped": "[0m[1;33m(I t:1412546ms)   \"wifi\": {"
+    },
+    {
+      "timestamp": 43433,
+      "data": "[0m[1;33m(I t:1412546ms)     \"connected\": true,",
+      "escaped": "[0m[1;33m(I t:1412546ms)     \"connected\": true,"
+    },
+    {
+      "timestamp": 43435,
+      "data": "[0m[1;33m(I t:1412546ms)     \"mac\": \"D8:A0:1D:57:CA:58\",",
+      "escaped": "[0m[1;33m(I t:1412546ms)     \"mac\": \"D8:A0:1D:57:CA:58\","
+    },
+    {
+      "timestamp": 43436,
+      "data": "[0m[1;33m(I t:1412546ms)     \"ssid\": \"tpl24\",",
+      "escaped": "[0m[1;33m(I t:1412546ms)     \"ssid\": \"tpl24\","
+    },
+    {
+      "timestamp": 43437,
+      "data": "[0m[1;33m(I t:1412546ms)     \"ip\": \"192.168.0.218\",",
+      "escaped": "[0m[1;33m(I t:1412546ms)     \"ip\": \"192.168.0.218\","
+    },
+    {
+      "timestamp": 43440,
+      "data": "[0m[1;33m(I t:1412546ms)     \"rssi_dbm\": -57,",
+      "escaped": "[0m[1;33m(I t:1412546ms)     \"rssi_dbm\": -57,"
+    },
+    {
+      "timestamp": 43442,
+      "data": "[0m[1;33m(I t:1412547ms)     \"channel\": 3",
+      "escaped": "[0m[1;33m(I t:1412547ms)     \"channel\": 3"
+    },
+    {
+      "timestamp": 43447,
+      "data": "[0m[1;33m(I t:1412547ms)   },",
+      "escaped": "[0m[1;33m(I t:1412547ms)   },"
+    },
+    {
+      "timestamp": 43452,
+      "data": "[0m[1;33m(I t:1412547ms)   \"flash\": {",
+      "escaped": "[0m[1;33m(I t:1412547ms)   \"flash\": {"
+    },
+    {
+      "timestamp": 43454,
+      "data": "[0m[1;33m(I t:1412547ms)     \"size_b\": 4194304,",
+      "escaped": "[0m[1;33m(I t:1412547ms)     \"size_b\": 4194304,"
+    },
+    {
+      "timestamp": 43456,
+      "data": "[0m[1;33m(I t:1412547ms)     \"sketch_used_b\": 982512,",
+      "escaped": "[0m[1;33m(I t:1412547ms)     \"sketch_used_b\": 982512,"
+    },
+    {
+      "timestamp": 43458,
+      "data": "[0m[1;33m(I t:1412547ms)     \"sketch_free_b\": 1310720",
+      "escaped": "[0m[1;33m(I t:1412547ms)     \"sketch_free_b\": 1310720"
+    },
+    {
+      "timestamp": 43480,
+      "data": "[0m[1;33m(I t:1412547ms)   },",
+      "escaped": "[0m[1;33m(I t:1412547ms)   },"
+    },
+    {
+      "timestamp": 43482,
+      "data": "[0m[1;33m(I t:1412547ms)   \"display\": {",
+      "escaped": "[0m[1;33m(I t:1412547ms)   \"display\": {"
+    },
+    {
+      "timestamp": 43483,
+      "data": "[0m[1;33m(I t:1412547ms)     \"on\": false",
+      "escaped": "[0m[1;33m(I t:1412547ms)     \"on\": false"
+    },
+    {
+      "timestamp": 43484,
+      "data": "[0m[1;33m(I t:1412548ms)   },",
+      "escaped": "[0m[1;33m(I t:1412548ms)   },"
+    },
+    {
+      "timestamp": 43486,
+      "data": "[0m[1;33m(I t:1412548ms)   \"relay\": {",
+      "escaped": "[0m[1;33m(I t:1412548ms)   \"relay\": {"
+    },
+    {
+      "timestamp": 43489,
+      "data": "[0m[1;33m(I t:1412548ms)     \"busy\": false",
+      "escaped": "[0m[1;33m(I t:1412548ms)     \"busy\": false"
+    },
+    {
+      "timestamp": 43491,
+      "data": "[0m[1;33m(I t:1412548ms)   },",
+      "escaped": "[0m[1;33m(I t:1412548ms)   },"
+    },
+    {
+      "timestamp": 43543,
+      "data": "[0m[1;33m(I t:1412642ms)   \"boot\": {",
+      "escaped": "[0m[1;33m(I t:1412642ms)   \"boot\": {"
+    },
+    {
+      "timestamp": 43547,
+      "data": "[0m[1;33m(I t:1412642ms)     \"reason\": \"software\"",
+      "escaped": "[0m[1;33m(I t:1412642ms)     \"reason\": \"software\""
+    },
+    {
+      "timestamp": 43549,
+      "data": "[0m[1;33m(I t:1412642ms)   }",
+      "escaped": "[0m[1;33m(I t:1412642ms)   }"
+    },
+    {
+      "timestamp": 43551,
+      "data": "[0m[1;33m(I t:1412642ms) }",
+      "escaped": "[0m[1;33m(I t:1412642ms) }"
+    },
+    {
+      "timestamp": 46355,
+      "data": "[0m* Debug: Command received: i",
+      "escaped": "[0m* Debug: Command received: i"
+    },
+    {
+      "timestamp": 46358,
+      "data": "* Debug level set to Info",
+      "escaped": "* Debug level set to Info"
+    },
+    {
+      "timestamp": 46363,
+      "data": "$app:L:3",
+      "escaped": "$app:L:3"
+    },
+    {
+      "timestamp": 46865,
+      "data": "* Debug: Command received: w",
+      "escaped": "* Debug: Command received: w"
+    },
+    {
+      "timestamp": 46869,
+      "data": "* Debug level set to Warning",
+      "escaped": "* Debug level set to Warning"
+    },
+    {
+      "timestamp": 46874,
+      "data": "$app:L:4",
+      "escaped": "$app:L:4"
+    },
+    {
+      "timestamp": 48094,
+      "data": "* Debug: Command received: e",
+      "escaped": "* Debug: Command received: e"
+    },
+    {
+      "timestamp": 48096,
+      "data": "* Debug level set to Error",
+      "escaped": "* Debug level set to Error"
+    },
+    {
+      "timestamp": 48099,
+      "data": "$app:L:5",
+      "escaped": "$app:L:5"
+    },
+    {
+      "timestamp": 49327,
+      "data": "* Debug: Command received: d",
+      "escaped": "* Debug: Command received: d"
+    },
+    {
+      "timestamp": 49330,
+      "data": "* Debug level set to Debug",
+      "escaped": "* Debug level set to Debug"
+    },
+    {
+      "timestamp": 49332,
+      "data": "$app:L:2",
+      "escaped": "$app:L:2"
+    }
+  ],
+  "connections": [
+    {
+      "url": "ws://192.168.0.218:8232",
+      "protocols": [
+        "arduino"
+      ],
+      "createdAt": "2025-12-06T06:54:53.719Z",
+      "state": "open",
+      "openedAt": "2025-12-06T06:54:53.879Z"
+    }
+  ],
+  "startTime": 1765004091735
+}

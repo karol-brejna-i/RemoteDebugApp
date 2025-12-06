@@ -1,0 +1,91 @@
+/**
+ * CSS Variables
+ */
+
+:root {
+  /* Typography */
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
+             Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', 
+               'Cascadia Code', Consolas, 'Liberation Mono', monospace;
+
+  /* Transitions */
+  --transition-fast: 100ms ease-out;
+  --transition-normal: 200ms ease-out;
+  --transition-slow: 300ms ease-out;
+
+  /* Brand colors */
+  --brand-accent: #38BDF8;
+  --brand-text: #E5E7EB;
+
+  /* Accent (same for both themes) */
+  --accent-primary: #38BDF8;
+  --accent-hover: #7DD3FC;
+
+  /* Status colors (same for both themes) */
+  --status-connected: #4ec9b0;
+  --status-disconnected: #6c6c6c;
+  --status-connecting: #dcdcaa;
+  --status-error: #f14c4c;
+
+  /* Debug level colors - can be overridden by user */
+  --color-verbose: #6a9955;
+  --color-debug: #4ec9b0;
+  --color-info: #dcdcaa;
+  --color-warning: #ce9178;
+  --color-error: #f14c4c;
+
+  /* Profiler background colors */
+  --profiler-fast: rgba(45, 90, 45, 0.5);
+  --profiler-medium: rgba(90, 90, 45, 0.5);
+  --profiler-slow: rgba(90, 74, 45, 0.5);
+  --profiler-very-slow: rgba(90, 45, 45, 0.5);
+}
+
+/* Dark theme (default) */
+:root,
+[data-theme="dark"] {
+  --bg-primary: #1e1e1e;
+  --bg-secondary: #252526;
+  --bg-tertiary: #2d2d2d;
+  --bg-hover: #3c3c3c;
+  --bg-active: #094771;
+
+  --text-primary: #cccccc;
+  --text-secondary: #8c8c8c;
+  --text-bright: #ffffff;
+  --text-disabled: #5c5c5c;
+
+  --border-default: #3c3c3c;
+  --border-active: #007acc;
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f3f3;
+  --bg-tertiary: #e8e8e8;
+  --bg-hover: #d4d4d4;
+  --bg-active: #cce5ff;
+
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-bright: #000000;
+  --text-disabled: #a0a0a0;
+
+  --border-default: #d4d4d4;
+  --border-active: #007acc;
+
+  /* Adjusted colors for light background */
+  --color-verbose: #22863a;
+  --color-debug: #0a7d8c;
+  --color-info: #b08800;
+  --color-warning: #e36209;
+  --color-error: #cb2431;
+
+  /* Lighter profiler backgrounds for light theme */
+  --profiler-fast: rgba(45, 180, 45, 0.2);
+  --profiler-medium: rgba(180, 180, 45, 0.2);
+  --profiler-slow: rgba(180, 120, 45, 0.2);
+  --profiler-very-slow: rgba(180, 45, 45, 0.2);
+}

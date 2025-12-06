@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="WSTerm - WebSocket Terminal for remote debugging of ESP32/ESP8266 Arduino devices">
+  <title>WSTerm</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/WSTerm_icon.svg">
+  <link rel="stylesheet" href="./styles/main.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header__brand">
+        <img src="./assets/WSTerm_icon.svg" alt="WSTerm" class="header__logo" title="WSTerm">
+        <span class="header__title"><span class="title--accent">WS</span>Term</span>
+      </div>
+      
+      <div class="header__device-info" id="deviceInfo">
+        <span class="device-info__board" id="boardName">Not connected</span>
+        <span class="device-info__separator">•</span>
+        <span class="device-info__memory" id="memoryInfo">--</span>
+        <span class="device-info__separator">•</span>
+        <span class="device-info__version" id="versionInfo">--</span>
+      </div>
+      
+      <div class="header__connection">
+        <input 
+          type="text" 
+          id="addressInput" 
+          class="connection__input" 
+          placeholder="192.168.1.100"
+          list="addressHistory"
+          autocomplete="off"
+        >
+        <datalist id="addressHistory"></datalist>
+        <button id="connectBtn" class="connection__button" type="button">
+          Connect
+        </button>
+        <span id="connectionStatus" class="connection__status connection__status--disconnected" title="Disconnected"></span>
+      </div>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar__group toolbar__levels">
+        <button class="level-btn level-btn--verbose" data-level="1" title="Verbose (Ctrl+1)">V</button>
+        <button class="level-btn level-btn--debug" data-level="2" title="Debug (Ctrl+2)">D</button>
+        <button class="level-btn level-btn--info level-btn--active" data-level="3" title="Info (Ctrl+3)">I</button>
+        <button class="level-btn level-btn--warning" data-level="4" title="Warning (Ctrl+4)">W</button>
+        <button class="level-btn level-btn--error" data-level="5" title="Error (Ctrl+5)">E</button>
+      </div>
+      
+      <div class="toolbar__group toolbar__toggles">
+        <button id="silenceBtn" class="toggle-btn" title="Silence mode">🔇</button>
+        <button id="autoScrollBtn" class="toggle-btn toggle-btn--active" title="Auto-scroll">📜</button>
+        <button id="profilerBtn" class="toggle-btn" title="Profiler">⏱️</button>
+      </div>
+      
+      <div class="toolbar__group toolbar__filter">
+        <span class="filter__icon">🔍</span>
+        <input 
+          type="text" 
+          id="filterInput" 
+          class="filter__input" 
+          placeholder="Filter messages..."
+        >
+        <button id="filterClearBtn" class="filter__clear" title="Clear filter" hidden>×</button>
+      </div>
+      
+      <div class="toolbar__group toolbar__actions">
+        <button id="clearBtn" class="action-btn" title="Clear console">🗑️</button>
+        <button id="copyBtn" class="action-btn" title="Copy to clipboard">📋</button>
+      </div>
+    </div>
+
+    <!-- Console -->
+    <main class="console" id="console" role="log" aria-live="polite">
+      <div class="console__content" id="consoleContent">
+        <div class="console__welcome">
+          <p>Welcome to RemoteDebug</p>
+          <p class="console__welcome-hint">Enter device IP address and click Connect</p>
+        </div>
+      </div>
+      <button id="scrollToBottomBtn" class="console__scroll-btn" hidden>
+        ↓ New messages
+      </button>
+    </main>
+
+    <!-- Input Bar -->
+    <footer class="input-bar">
+      <span class="input-bar__prompt">›</span>
+      <input 
+        type="text" 
+        id="commandInput" 
+        class="input-bar__input" 
+        placeholder="Type command..."
+        autocomplete="off"
+      >
+      <button id="sendBtn" class="input-bar__send" type="button" title="Send (Enter)">
+        Send
+      </button>
+      <button id="settingsBtn" class="input-bar__settings" type="button" title="Settings">
+        ⚙️
+      </button>
+    </footer>
+
+    <!-- Settings Modal -->
+    <dialog id="settingsModal" class="settings-modal">
+      <div class="settings-modal__header">
+        <h2>Settings</h2>
+        <button id="settingsCloseBtn" class="settings-modal__close">×</button>
+      </div>
+      <div class="settings-modal__content">
+        <div class="settings-group">
+          <label class="settings-label">Theme</label>
+          <select id="themeSelect" class="settings-select">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+            <option value="system">System</option>
+          </select>
+        </div>
+        
+        <div class="settings-group">
+          <label class="settings-label">Font Size</label>
+          <div class="settings-font-size">
+            <button id="fontDecBtn" class="settings-btn">−</button>
+            <span id="fontSizeValue" class="settings-value">13px</span>
+            <button id="fontIncBtn" class="settings-btn">+</button>
+          </div>
+        </div>
+        
+        <div class="settings-group">
+          <label class="settings-label">Log Level Colors</label>
+          <div class="settings-colors">
+            <div class="color-picker">
+              <label>Verbose</label>
+              <input type="color" id="colorVerbose" value="#6a9955">
+            </div>
+            <div class="color-picker">
+              <label>Debug</label>
+              <input type="color" id="colorDebug" value="#4ec9b0">
+            </div>
+            <div class="color-picker">
+              <label>Info</label>
+              <input type="color" id="colorInfo" value="#dcdcaa">
+            </div>
+            <div class="color-picker">
+              <label>Warning</label>
+              <input type="color" id="colorWarning" value="#ce9178">
+            </div>
+            <div class="color-picker">
+              <label>Error</label>
+              <input type="color" id="colorError" value="#f14c4c">
+            </div>
+          </div>
+        </div>
+        
+        <hr class="settings-divider">
+        
+        <div class="settings-actions">
+          <button id="resetDeviceBtn" class="settings-btn settings-btn--danger">Reset Device</button>
+          <button id="resetSettingsBtn" class="settings-btn">Reset to Defaults</button>
+        </div>
+      </div>
+    </dialog>
+  </div>
+  
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

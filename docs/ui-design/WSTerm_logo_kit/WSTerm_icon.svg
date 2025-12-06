@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="50" viewBox="0 0 80 50">
+  <rect x="2" y="2" width="76" height="46" rx="8" ry="8"
+        fill="#050609" stroke="#38BDF8" stroke-width="2"/>
+  <text x="12" y="32" fill="#E5E7EB"
+        font-family="JetBrains Mono, monospace" font-size="18">&gt;_</text>
+  <circle cx="50" cy="20" r="5" fill="#38BDF8"/>
+  <circle cx="60" cy="30" r="5" fill="#38BDF8"/>
+</svg>
