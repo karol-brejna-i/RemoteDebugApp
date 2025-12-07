@@ -75,11 +75,46 @@ export interface ParsedMessage {
   receivedAt: number;
 }
 
-export interface ProtocolMessage {
-  type: 'I' | 'V' | 'L' | 'M';
-  data: Record<string, unknown>;
+export interface ProtocolMessageI {
+  type: 'I';
+  data: Record<string, never>;
   raw: string;
 }
+
+export interface ProtocolMessageV {
+  type: 'V';
+  data: {
+    version: string;
+    board: string;
+    features: string;
+    memory: number;
+    debuggerEnabled: boolean;
+    silenceMode: boolean;
+  };
+  raw: string;
+}
+
+export interface ProtocolMessageL {
+  type: 'L';
+  data: {
+    level: number;
+  };
+  raw: string;
+}
+
+export interface ProtocolMessageM {
+  type: 'M';
+  data: {
+    memory: number;
+  };
+  raw: string;
+}
+
+export type ProtocolMessage = 
+  | ProtocolMessageI 
+  | ProtocolMessageV 
+  | ProtocolMessageL 
+  | ProtocolMessageM;
 
 // ============================================================================
 // Settings

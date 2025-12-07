@@ -5,7 +5,7 @@
  */
 
 import { WebSocketService } from '../services/WebSocketService';
-import { MessageParser } from '../services/MessageParser';
+import { createCodec, type IMessageCodec } from '../services/codec';
 import { StorageService } from '../services/StorageService';
 import { ThemeService } from '../services/ThemeService';
 import { Console } from './Console';
@@ -28,7 +28,7 @@ export class App {
   
   // Services
   private ws: WebSocketService;
-  private parser: MessageParser;
+  private codec: IMessageCodec;
   private storage: StorageService;
   private theme: ThemeService;
   
@@ -53,7 +53,7 @@ export class App {
     
     // Initialize services
     this.ws = new WebSocketService();
-    this.parser = new MessageParser();
+    this.codec = createCodec('remotedebug');
     this.storage = new StorageService();
     this.theme = new ThemeService();
     
@@ -168,8 +168,9 @@ export class App {
       this.commandInput.setEnabled(true);
       this.console.appendSystemMessage(`Connected to ${this.header.getIp()}`);
       
-      // Send handshake
-      this.ws.send('$app');
+      // Send handshake using codec
+      const handshake = this.codec.encode({ type: 'handshake' });
+      this.ws.send(handshake);
     });
 
     this.ws.onDisconnect(() => {
@@ -200,23 +201,30 @@ export class App {
       return;
     }
 
-    const messages = this.parser.parse(data);
+    const { messages, protocolMessages } = this.codec.decode(data);
     
+    // Handle protocol messages first
+    for (const proto of protocolMessages) {
+      this.handleProtocolMessage(proto);
+    }
+    
+    // Display regular messages
     for (const msg of messages) {
+      // Skip protocol messages in display (already handled above)
       if (msg.type === 'protocol') {
-        this.handleProtocolMessage(msg);
-      } else {
-        // Only show messages at or above current level
-        if (msg.level && msg.level >= this.currentLevel) {
-          this.console.appendMessage(msg);
-          this.messageCount++;
-          this.footer.setMessageCount(this.messageCount);
-        } else if (!msg.level) {
-          // Show messages without level (system messages, unknown format)
-          this.console.appendMessage(msg);
-          this.messageCount++;
-          this.footer.setMessageCount(this.messageCount);
-        }
+        continue;
+      }
+      
+      // Only show messages at or above current level
+      if (msg.level && msg.level >= this.currentLevel) {
+        this.console.appendMessage(msg);
+        this.messageCount++;
+        this.footer.setMessageCount(this.messageCount);
+      } else if (!msg.level) {
+        // Show messages without level (system messages, unknown format)
+        this.console.appendMessage(msg);
+        this.messageCount++;
+        this.footer.setMessageCount(this.messageCount);
       }
     }
   }
@@ -224,34 +232,39 @@ export class App {
   /**
    * Handle protocol messages ($app:...)
    */
-  private handleProtocolMessage(msg: ParsedMessage): void {
-    const content = msg.content;
-    
-    if (content.startsWith('V:')) {
-      // Version info: $app:V:board:firmware:library
-      const parts = content.substring(2).split(':');
-      if (parts.length >= 3) {
+  private handleProtocolMessage(proto: import('../types').ProtocolMessage): void {
+    switch (proto.type) {
+      case 'V':
+        // Version info
         this.device = {
-          board: parts[0],
-          firmware: parts[1],
-          library: parts[2],
-          freeHeap: 0,
+          board: proto.data.board || 'Unknown',
+          firmware: proto.data.version || 'Unknown',
+          library: `RemoteDebug ${proto.data.version || ''}`,
+          freeHeap: proto.data.memory || 0,
         };
         this.footer.setDeviceInfo(this.device);
-      }
-    } else if (content.startsWith('L:')) {
-      // Level info
-      const level = parseInt(content.substring(2)) as DebugLevel;
-      if (level >= 1 && level <= 5) {
-        this.currentLevel = level;
-        this.toolbar.setLevel(level);
-      }
-    } else if (content.startsWith('M:')) {
-      // Memory info
-      const mem = parseInt(content.substring(2));
-      if (this.device && !isNaN(mem)) {
-        this.device.freeHeap = mem;
-      }
+        break;
+        
+      case 'L':
+        // Level info
+        const level = proto.data.level as DebugLevel;
+        if (level >= 1 && level <= 5) {
+          this.currentLevel = level;
+          this.toolbar.setLevel(level);
+        }
+        break;
+        
+      case 'M':
+        // Memory info
+        if (this.device && proto.data.memory) {
+          this.device.freeHeap = proto.data.memory;
+          this.footer.setDeviceInfo(this.device);
+        }
+        break;
+        
+      case 'I':
+        // Initial handshake - already connected
+        break;
     }
   }
 
@@ -359,7 +372,9 @@ export class App {
       return;
     }
 
-    this.ws.send(command);
+    // Encode using codec (raw command pass-through)
+    const encoded = this.codec.encode({ type: 'raw', command });
+    this.ws.send(encoded);
     this.console.appendSystemMessage(`> ${command}`);
   }
 
@@ -371,15 +386,9 @@ export class App {
     this.toolbar.setLevel(level);
     
     if (this.connectionState === 'connected') {
-      // Send level letter command to device: v, d, i, w, e
-      const levelCommands: Record<DebugLevel, string> = {
-        1: 'v',  // Verbose
-        2: 'd',  // Debug
-        3: 'i',  // Info
-        4: 'w',  // Warning
-        5: 'e',  // Error
-      };
-      this.ws.send(levelCommands[level]);
+      // Encode level command using codec
+      const encoded = this.codec.encode({ type: 'level', level });
+      this.ws.send(encoded);
     }
   }
 
