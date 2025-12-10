@@ -5,16 +5,39 @@
  * Implement this interface to support different protocols or message formats.
  */
 
-import type { ParsedMessage, ProtocolMessage, DebugLevel } from '../../types';
+import type { ParsedMessage, DebugLevel, DeviceInfo } from '../../types';
 
 /**
  * Decoded result from incoming raw data
  */
+export type CodecControlEvent =
+  | { type: 'levelChanged'; level: DebugLevel }
+  | { type: 'deviceInfo'; info: DeviceInfo }
+  | { type: 'memory'; freeHeap: number }
+  | { type: 'handshakeAck' };
+
 export interface DecodedMessages {
   /** Parsed debug/system messages for display */
   messages: ParsedMessage[];
-  /** Protocol messages for app control */
-  protocolMessages: ProtocolMessage[];
+  /** Control events emitted by the codec (protocol-specific -> app-generic) */
+  controlEvents: CodecControlEvent[];
+}
+
+export interface CodecCapabilities {
+  /** Device supports level commands */
+  levels: boolean;
+  /** Device accepts reset command */
+  reset: boolean;
+  /** Device supports filter commands */
+  filters: boolean;
+  /** Device supports profiler toggling */
+  profiler: boolean;
+  /** Device supports color toggling */
+  colors: boolean;
+  /** Handshake required before other commands */
+  handshakeRequired: boolean;
+  /** Preferred default port for this codec */
+  defaultPort?: number;
 }
 
 /**
@@ -44,6 +67,11 @@ export interface IMessageCodec {
    * Codec identifier for logging/debugging
    */
   readonly name: string;
+
+  /**
+   * Capability flags describing supported commands/features
+   */
+  readonly capabilities: CodecCapabilities;
 
   /**
    * Decode raw data received from the device

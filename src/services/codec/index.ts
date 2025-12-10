@@ -9,7 +9,9 @@
 export type { 
   IMessageCodec, 
   DecodedMessages, 
-  CommandType 
+  CommandType,
+  CodecCapabilities,
+  CodecControlEvent,
 } from './MessageCodec';
 
 // Implementations

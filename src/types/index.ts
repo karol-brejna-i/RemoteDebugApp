@@ -152,6 +152,7 @@ export interface AppSettings {
   showTimestamps: boolean;
   showFunctionNames: boolean;
   showProfiler: boolean;
+  codecName: string;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -180,6 +181,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   showTimestamps: true,
   showFunctionNames: true,
   showProfiler: false,
+  codecName: 'remotedebug',
 };
 
 // ============================================================================

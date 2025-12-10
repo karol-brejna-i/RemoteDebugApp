@@ -5,9 +5,9 @@
  * Protocol specification: See docs/ANALYSIS_AND_IMPLEMENTATION_PLAN.md
  */
 
-import type { ParsedMessage, ProtocolMessage, DebugLevel } from '../../types';
+import type { ParsedMessage, DebugLevel, DeviceInfo } from '../../types';
 import { DEBUG_LEVEL_LETTERS } from '../../types';
-import type { IMessageCodec, DecodedMessages, CommandType } from './MessageCodec';
+import type { IMessageCodec, DecodedMessages, CommandType, CodecCapabilities, CodecControlEvent } from './MessageCodec';
 
 /**
  * Level letter to command mapping
@@ -37,6 +37,15 @@ const ANSI_TO_CSS: Record<string, string> = {
 
 export class RemoteDebugCodec implements IMessageCodec {
   readonly name = 'RemoteDebug';
+  readonly capabilities: CodecCapabilities = {
+    levels: true,
+    reset: true,
+    filters: true,
+    profiler: true,
+    colors: true,
+    handshakeRequired: true,
+    defaultPort: 8232,
+  };
   
   private messageIdCounter = 0;
 
@@ -46,7 +55,7 @@ export class RemoteDebugCodec implements IMessageCodec {
   decode(data: string): DecodedMessages {
     const lines = data.split('\n');
     const messages: ParsedMessage[] = [];
-    const protocolMessages: ProtocolMessage[] = [];
+    const controlEvents: CodecControlEvent[] = [];
 
     for (const line of lines) {
       const trimmed = line.trim();
@@ -54,9 +63,9 @@ export class RemoteDebugCodec implements IMessageCodec {
 
       // Check for protocol message
       if (trimmed.startsWith('$app:')) {
-        const protoMsg = this.decodeProtocolMessage(trimmed);
-        if (protoMsg) {
-          protocolMessages.push(protoMsg);
+        const event = this.decodeProtocolMessage(trimmed);
+        if (event) {
+          controlEvents.push(event);
         }
         // Also add as a regular message for logging purposes
         messages.push(this.createMessage('protocol', trimmed, trimmed));
@@ -69,7 +78,7 @@ export class RemoteDebugCodec implements IMessageCodec {
       }
     }
 
-    return { messages, protocolMessages };
+    return { messages, controlEvents };
   }
 
   /**
@@ -283,7 +292,7 @@ export class RemoteDebugCodec implements IMessageCodec {
   /**
    * Decode protocol message ($app:...)
    */
-  private decodeProtocolMessage(raw: string): ProtocolMessage | null {
+  private decodeProtocolMessage(raw: string): CodecControlEvent | null {
     if (!raw.startsWith('$app:')) {
       return null;
     }
@@ -294,21 +303,13 @@ export class RemoteDebugCodec implements IMessageCodec {
     switch (type) {
       case 'I':
         // Handshake acknowledgment
-        return { type: 'I', data: {}, raw };
+        return { type: 'handshakeAck' };
 
       case 'V':
         // Version: $app:V:<ver>:<board>:<feat>:<mem>:<dbg>:<sil>
         return {
-          type: 'V',
-          data: {
-            version: parts[1] || '',
-            board: parts[2] || '',
-            features: parts[3] || '',
-            memory: this.parseMemory(parts[4] || ''),
-            debuggerEnabled: parts[5] === 'E',
-            silenceMode: parts[6] === 'Y',
-          },
-          raw,
+          type: 'deviceInfo',
+          info: this.buildDeviceInfo(parts),
         };
 
       case 'L':
@@ -316,17 +317,15 @@ export class RemoteDebugCodec implements IMessageCodec {
         const levelPart = parts[1] || '';
         const level = parseInt(levelPart.split('-')[0], 10) || 3;
         return {
-          type: 'L',
-          data: { level },
-          raw,
+          type: 'levelChanged',
+          level,
         };
 
       case 'M':
         // Memory: $app:M:<bytes>u:
         return {
-          type: 'M',
-          data: { memory: this.parseMemory(parts[1] || '') },
-          raw,
+          type: 'memory',
+          freeHeap: this.parseMemory(parts[1] || ''),
         };
 
       default:
@@ -339,5 +338,18 @@ export class RemoteDebugCodec implements IMessageCodec {
    */
   private parseMemory(value: string): number {
     return parseInt(value.replace(/[^\d]/g, ''), 10) || 0;
+  }
+
+  private buildDeviceInfo(parts: string[]): DeviceInfo {
+    const version = parts[1] || '';
+    const board = parts[2] || 'Unknown';
+    const memory = this.parseMemory(parts[4] || '');
+
+    return {
+      board,
+      firmware: version || 'Unknown',
+      library: `RemoteDebug ${version}`.trim(),
+      freeHeap: memory,
+    };
   }
 }

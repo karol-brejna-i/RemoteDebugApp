@@ -22,6 +22,7 @@ import type {
   DebugLevel,
 } from '../types';
 import { DEFAULT_SETTINGS } from '../types';
+import type { CodecControlEvent } from '../services/codec';
 
 export class App {
   private container: HTMLElement;
@@ -51,18 +52,34 @@ export class App {
   constructor(container: HTMLElement) {
     this.container = container;
     
-    // Initialize services
-    this.ws = new WebSocketService();
-    this.codec = createCodec('remotedebug');
+    // Initialize services and settings
     this.storage = new StorageService();
-    this.theme = new ThemeService();
-    
-    // Load settings
     this.settings = this.storage.loadSettings();
-    
+    this.ws = new WebSocketService();
+    this.codec = this.resolveCodec();
+    this.theme = new ThemeService();
+
     // Apply saved theme
     this.theme.setTheme(this.settings.theme);
     this.debug('app.init');
+  }
+
+  /**
+   * Resolve codec based on URL query (?codec=name) with fallback to default
+   */
+  private resolveCodec() {
+    const params = new URLSearchParams(window.location.search);
+    const paramName = params.get('codec');
+    const chosen = (paramName || this.settings.codecName || 'remotedebug').toLowerCase();
+
+    // Persist if changed
+    if (chosen !== this.settings.codecName) {
+      this.settings.codecName = chosen;
+      this.storage.saveSettings(this.settings);
+    }
+
+    this.debug('codec.select', { codecName: chosen, source: paramName ? 'query' : 'settings' });
+    return createCodec(chosen);
   }
 
   /**
@@ -170,9 +187,11 @@ export class App {
       this.commandInput.setEnabled(true);
       this.console.appendSystemMessage(`Connected to ${this.header.getIp()}`);
       
-      // Send handshake using codec
-      const handshake = this.codec.encode({ type: 'handshake' });
-      this.ws.send(handshake);
+      // Send handshake if required by codec
+      if (this.codec.capabilities.handshakeRequired) {
+        const handshake = this.codec.encode({ type: 'handshake' });
+        this.ws.send(handshake);
+      }
     });
 
     this.ws.onDisconnect(() => {
@@ -203,11 +222,11 @@ export class App {
       return;
     }
 
-    const { messages, protocolMessages } = this.codec.decode(data);
+    const { messages, controlEvents } = this.codec.decode(data);
     
-    // Handle protocol messages first
-    for (const proto of protocolMessages) {
-      this.handleProtocolMessage(proto);
+    // Handle control events first
+    for (const event of controlEvents) {
+      this.handleControlEvent(event);
     }
     
     // Display regular messages
@@ -234,38 +253,26 @@ export class App {
   /**
    * Handle protocol messages ($app:...)
    */
-  private handleProtocolMessage(proto: import('../types').ProtocolMessage): void {
-    switch (proto.type) {
-      case 'V':
-        // Version info
-        this.device = {
-          board: proto.data.board || 'Unknown',
-          firmware: proto.data.version || 'Unknown',
-          library: `RemoteDebug ${proto.data.version || ''}`,
-          freeHeap: proto.data.memory || 0,
-        };
+  private handleControlEvent(event: CodecControlEvent): void {
+    switch (event.type) {
+      case 'deviceInfo':
+        this.device = event.info;
         this.footer.setDeviceInfo(this.device);
         break;
-        
-      case 'L':
-        // Level info
-        const level = proto.data.level as DebugLevel;
-        if (level >= 1 && level <= 5) {
-          this.currentLevel = level;
-          this.toolbar.setLevel(level);
+      case 'levelChanged':
+        if (event.level >= 1 && event.level <= 5) {
+          this.currentLevel = event.level;
+          this.toolbar.setLevel(event.level);
         }
         break;
-        
-      case 'M':
-        // Memory info
-        if (this.device && proto.data.memory) {
-          this.device.freeHeap = proto.data.memory;
+      case 'memory':
+        if (this.device) {
+          this.device.freeHeap = event.freeHeap;
           this.footer.setDeviceInfo(this.device);
         }
         break;
-        
-      case 'I':
-        // Initial handshake - already connected
+      case 'handshakeAck':
+        // No-op for now; reserved for future connection state updates
         break;
     }
   }
@@ -401,6 +408,10 @@ export class App {
     this.currentLevel = level;
     this.debug('level.set', { level });
     this.toolbar.setLevel(level);
+    if (!this.codec.capabilities.levels) {
+      this.console.appendSystemMessage('Current protocol does not support level changes');
+      return;
+    }
     
     if (this.connectionState === 'connected') {
       // Encode level command using codec
@@ -445,6 +456,10 @@ export class App {
   private requestResetConfirmation(): void {
     if (this.connectionState !== 'connected') {
       this.console.appendSystemMessage('Not connected to device');
+      return;
+    }
+    if (!this.codec.capabilities.reset) {
+      this.console.appendSystemMessage('Current protocol does not support reset command');
       return;
     }
 
