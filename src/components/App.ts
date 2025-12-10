@@ -62,6 +62,7 @@ export class App {
     
     // Apply saved theme
     this.theme.setTheme(this.settings.theme);
+    this.debug('app.init');
   }
 
   /**
@@ -95,6 +96,7 @@ export class App {
    * Initialize all UI components
    */
   private initComponents(): void {
+    this.debug('ui.init-components');
     // Header
     this.header = new Header(
       this.container.querySelector('#header-container')!,
@@ -280,48 +282,59 @@ export class App {
 
       // Level shortcuts
       if (e.key === 'v' || e.key === 'V') {
+        this.debug('shortcut.level', { key: e.key });
         this.setLevel(1);
         return;
       }
       if (e.key === 'd' || e.key === 'D') {
+        this.debug('shortcut.level', { key: e.key });
         this.setLevel(2);
         return;
       }
       if (e.key === 'i' || e.key === 'I') {
+        this.debug('shortcut.level', { key: e.key });
         this.setLevel(3);
         return;
       }
       if (e.key === 'w' || e.key === 'W') {
+        this.debug('shortcut.level', { key: e.key });
         this.setLevel(4);
         return;
       }
       if (e.key === 'e' || e.key === 'E') {
+        this.debug('shortcut.level', { key: e.key });
         this.setLevel(5);
         return;
       }
 
       // Other shortcuts
       switch (e.key) {
-        case 'r':
-        case 'R':
-          this.sendCommand('reset');
-          break;
         case 'c':
         case 'C':
+          this.debug('shortcut.clear', { key: e.key });
           this.clearConsole();
           break;
         case '?':
+          this.debug('shortcut.help', { key: e.key });
           this.sendCommand('?');
+          break;
+        case 'r':
+        case 'R':
+          this.debug('shortcut.reset', { key: e.key });
+          this.requestResetConfirmation();
           break;
         case 'p':
         case 'P':
+          this.debug('shortcut.pause', { key: e.key });
           this.togglePause();
           break;
         case 'a':
         case 'A':
+          this.debug('shortcut.autoscroll', { key: e.key });
           this.toggleAutoScroll();
           break;
         case 'Escape':
+          this.debug('shortcut.close-settings', { key: e.key });
           this.settingsPanel.close();
           break;
       }
@@ -329,12 +342,14 @@ export class App {
       // Ctrl+L - clear console
       if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
         e.preventDefault();
+        this.debug('shortcut.clear', { key: 'Ctrl+L' });
         this.clearConsole();
       }
 
       // Ctrl+F - focus filter
       if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
         e.preventDefault();
+        this.debug('shortcut.focus-filter', { key: 'Ctrl+F' });
         this.toolbar.focusFilter();
       }
     });
@@ -372,6 +387,7 @@ export class App {
       return;
     }
 
+    this.debug('command.send', { command });
     // Encode using codec (raw command pass-through)
     const encoded = this.codec.encode({ type: 'raw', command });
     this.ws.send(encoded);
@@ -383,6 +399,7 @@ export class App {
    */
   private setLevel(level: DebugLevel): void {
     this.currentLevel = level;
+    this.debug('level.set', { level });
     this.toolbar.setLevel(level);
     
     if (this.connectionState === 'connected') {
@@ -406,6 +423,7 @@ export class App {
    */
   private togglePause(): void {
     this.isPaused = !this.isPaused;
+    this.debug('pause.toggle', { paused: this.isPaused });
     this.toolbar.setPaused(this.isPaused);
     this.console.appendSystemMessage(this.isPaused ? 'Output paused' : 'Output resumed');
   }
@@ -415,9 +433,30 @@ export class App {
    */
   private toggleAutoScroll(): void {
     this.settings.autoScroll = !this.settings.autoScroll;
+    this.debug('autoscroll.toggle', { enabled: this.settings.autoScroll });
     this.toolbar.setAutoScroll(this.settings.autoScroll);
     this.console.setAutoScroll(this.settings.autoScroll);
     this.storage.saveSettings(this.settings);
+  }
+
+  /**
+   * Confirm before sending reset command to avoid accidental device reboot
+   */
+  private requestResetConfirmation(): void {
+    if (this.connectionState !== 'connected') {
+      this.console.appendSystemMessage('Not connected to device');
+      return;
+    }
+
+    const confirmed = window.confirm('This will reboot the device. Send reset command?');
+    if (!confirmed) {
+      this.debug('reset.cancelled');
+      this.console.appendSystemMessage('Reset cancelled');
+      return;
+    }
+
+    this.debug('reset.confirmed');
+    this.sendCommand('reset');
   }
 
   /**
@@ -425,6 +464,7 @@ export class App {
    */
   private toggleTheme(): void {
     const newTheme = this.settings.theme === 'dark' ? 'light' : 'dark';
+    this.debug('theme.toggle', { theme: newTheme });
     this.settings.theme = newTheme;
     this.theme.setTheme(newTheme);
     this.storage.saveSettings(this.settings);
@@ -434,6 +474,7 @@ export class App {
    * Update settings
    */
   private updateSettings(changes: Partial<AppSettings>): void {
+    this.debug('settings.update', { changes });
     this.settings = { ...this.settings, ...changes };
     this.storage.saveSettings(this.settings);
     
@@ -484,6 +525,18 @@ export class App {
     const history = this.storage.getCommandHistory();
     if (history.length > 0) {
       this.commandInput.loadHistory(history);
+    }
+  }
+
+  /**
+   * Lightweight debug logger; enabled only in development builds to reduce noise in production.
+   */
+  private debug(event: string, data?: Record<string, unknown>): void {
+    if (!import.meta.env.DEV) return;
+    if (data) {
+      console.debug(`[WSTerm] ${event}`, data);
+    } else {
+      console.debug(`[WSTerm] ${event}`);
     }
   }
 }

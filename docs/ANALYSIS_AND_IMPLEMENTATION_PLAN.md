@@ -1,4 +1,6 @@
-# RemoteDebugApp - Analysis and Implementation Plan
+# WSTerm - Analysis and Implementation Plan
+
+> **Note**: This project was originally called RemoteDebugApp and has been reimplemented as WSTerm with a modern TypeScript/Vite stack.
 
 ## Table of Contents
 1. [Project Overview](#project-overview)
@@ -7,7 +9,7 @@
 4. [Communication Protocol](#communication-protocol)
 5. [Message Format Specification](#message-format-specification)
 6. [UI Components and Layout](#ui-components-and-layout)
-7. [New Implementation Plan](#new-implementation-plan)
+7. [Implementation](#implementation)
 8. [Technology Recommendations](#technology-recommendations)
 9. [Migration Strategy](#migration-strategy)
 
@@ -15,33 +17,36 @@
 - [REQUIREMENTS.md](./REQUIREMENTS.md) - Formal requirements specification
 - [FUTURE_IMPROVEMENTS.md](./FUTURE_IMPROVEMENTS.md) - Planned future enhancements
 - [SSL_WSS_GUIDE.md](./SSL_WSS_GUIDE.md) - SSL/WSS configuration options
+- [README.md](../README.md) - Main project documentation
 
 ---
 
 ## 1. Project Overview
 
 ### Purpose
-RemoteDebugApp is an HTML5 web application designed to debug Arduino (ESP8266/ESP32) devices remotely over WiFi. It connects to the Arduino board via WebSocket and provides a console-like interface for:
+WSTerm (formerly RemoteDebugApp) is a modern HTML5 web application designed to debug Arduino (ESP8266/ESP32) devices remotely over WiFi. It connects to the Arduino board via WebSocket and provides a console-like interface for:
 - Real-time debug message streaming
 - Sending commands to the device
 - Changing debug levels
 - Monitoring device status (free memory, version, etc.)
 
 ### Current Version
-- Version: 0.3.2 (2019-03-20)
-- Author: Joao Lopes
+- **New Implementation**: WSTerm 1.0 (TypeScript/Vite)
+- **Original**: RemoteDebugApp v0.3.2 (2019-03-20) by Joao Lopes
 - License: MIT
 
 ### Key Characteristics
-- Pure HTML5/CSS3/JavaScript (client-side only)
+- **Modern Stack**: TypeScript 5.x + Vite 5.x
+- **Codec Abstraction**: Protocol-agnostic message encoding/decoding
+- **Performance Optimized**: Batched rendering for high-throughput output
 - Uses WebSocket for real-time bidirectional communication
-- Works locally (can be opened directly from disk)
+- Works locally (can be opened directly from disk after build)
 - Communicates with RemoteDebug library v3+ on Arduino
 - Uses HTTP (not HTTPS) due to Arduino WebSocket server limitations (no SSL/WSS support)
 
 ---
 
-## 2. Current Architecture Analysis
+## 2. Original Architecture Analysis
 
 ### File Structure
 ```
@@ -227,14 +232,53 @@ $app:V:4.0.0:ESP32:M:217356u:D:N
 | 5 | Error |
 
 #### 5.2 Regular Debug Messages
-Plain text, optionally with ANSI color codes for formatting:
+Plain text, optionally with ANSI color codes for formatting.
 
-**Format with colors enabled:**
-```
-[<ANSI_CODE>](<LEVEL> t:<timestamp>ms) (<function>)(<core>) <message>[0m
-```
+**Supported Message Formats:**
 
-**Example:**
+The app supports multiple debug message formats observed from different RemoteDebug configurations:
+
+**Format 1: Standard with timestamp and profiler**
+```
+[<ANSI>](<LEVEL> t:<ms>ms p:^<prof>ms) (<func>)(<core>) <message>[0m
+```
+Example: `(D t:3676992ms p:^85246ms) (loop)(C1) Button pressed!`
+
+**Format 2: Standard with timestamp only**
+```
+[<ANSI>](<LEVEL> t:<ms>ms) (<func>)(<core>) <message>[0m
+```
+Example: `[1;33m(I t:1389111ms) (executeCommand)(C1) executeCommand: help[0m`
+
+**Format 3: Clock time format**
+```
+HH:MM:SS.mmm [<LEVEL>] (<func>) (<core>) <message>
+```
+Example: `00:23:04.086 [I] (executeCommand) (C1) executeCommand: status`
+
+**Format 4: Simple with timestamp**
+```
+(<LEVEL> t:<ms>ms) <message>
+```
+Example: `(I t:1384363ms) { "time": { ... } }`
+
+**Format 5: Minimal level indicator**
+```
+[<LEVEL>] <message>  or  (<LEVEL>) <message>
+```
+Example: `[I] Connected successfully`
+
+**Field Reference:**
+| Field | Description | Example |
+|-------|-------------|---------|
+| `<LEVEL>` | Single letter: V, D, I, W, E | `I` |
+| `<ms>` | Milliseconds since boot | `1389111` |
+| `<prof>` | Time since last message (profiler) | `85246` |
+| `<func>` | Function name | `executeCommand` |
+| `<core>` | CPU core (ESP32) | `C1` |
+| `HH:MM:SS.mmm` | Clock time format | `00:23:04.086` |
+
+**Example with all fields:**
 ```
 [1;33m(I t:1389111ms) (executeCommand)(C1) executeCommand: help[0m
 ```
@@ -447,47 +491,64 @@ This is the complete help output captured from RemoteDebug v4.0.0:
 
 ---
 
-## 7. New Implementation Plan
+## 7. Implementation
 
-### Phase 1: Project Setup
-1. **Initialize Modern Project Structure**
-   ```
-   src/
-   ├── index.html
-   ├── main.ts
-   ├── styles/
-   │   ├── main.css
-   │   ├── variables.css
-   │   ├── console.css
-   │   └── buttons.css
-   ├── components/
-   │   ├── Console.ts
-   │   ├── Header.ts
-   │   ├── Footer.ts
-   │   └── ConnectionPanel.ts
-   ├── services/
-   │   ├── WebSocketService.ts
-   │   ├── MessageParser.ts
-   │   └── StorageService.ts
-   ├── utils/
-   │   ├── ansi-parser.ts
-   │   ├── keyboard.ts
-   │   └── dom.ts
-   └── types/
-       └── index.ts
-   ```
+### Actual Project Structure (as implemented)
 
-2. **Configure Build Tools**
-   - Vite or esbuild for bundling
-   - TypeScript for type safety
-   - PostCSS for CSS processing
+```
+src/
+├── index.html           # Entry HTML with root container
+├── main.ts              # Application bootstrap
+├── styles/
+│   ├── main.css         # Global styles and layout
+│   ├── variables.css    # CSS custom properties (colors, spacing)
+│   ├── console.css      # Console output styling
+│   ├── components.css   # Component-specific styles
+│   └── themes.css       # Light/dark theme definitions
+├── components/
+│   ├── App.ts           # Main application controller
+│   ├── Console.ts       # Log output display with batched rendering
+│   ├── Header.ts        # Title and connection status
+│   ├── Footer.ts        # Status bar and message count
+│   ├── Toolbar.ts       # Command buttons and controls
+│   ├── CommandInput.ts  # Input field with history
+│   └── SettingsPanel.ts # Configuration modal
+├── services/
+│   ├── WebSocketService.ts  # WebSocket connection management
+│   ├── MessageParser.ts     # Legacy message parsing (deprecated)
+│   ├── StorageService.ts    # localStorage persistence
+│   ├── ThemeService.ts      # Theme switching (light/dark)
+│   └── codec/               # Protocol abstraction layer
+│       ├── MessageCodec.ts      # IMessageCodec interface
+│       ├── RemoteDebugCodec.ts  # RemoteDebug protocol implementation
+│       └── index.ts             # Factory and exports
+├── utils/               # (reserved for future utilities)
+├── types/
+│   └── index.ts         # TypeScript interfaces and types
+└── assets/
+    └── fonts/           # Custom fonts (optional)
 
-### Phase 2: Core Implementation
+tests/
+├── ws-test.cjs          # Automated WebSocket protocol tests
+├── ws-repl.cjs          # Interactive REPL for manual testing
+└── README.md            # Test documentation
 
-#### 2.1 Type Definitions
+docs/
+└── ANALYSIS_AND_IMPLEMENTATION_PLAN.md  # This file
+```
+
+### Build Configuration
+- **Vite 5.4.21** for bundling and development server
+- **TypeScript 5.x** with strict mode
+- **PostCSS** via Vite for CSS processing
+- Dev server on port 3000, WebSocket on port 8232
+
+### Key Implementation Details
+
+#### Type Definitions (as implemented)
 ```typescript
 // types/index.ts
-interface DeviceInfo {
+export interface DeviceInfo {
   board: string;
   version: string;
   memory: number;
@@ -497,47 +558,70 @@ interface DeviceInfo {
   debugLevel: DebugLevel;
 }
 
-enum DebugLevel {
-  Verbose = 1,
-  Debug = 2,
-  Info = 3,
-  Warning = 4,
-  Error = 5
-}
+export type DebugLevel = 1 | 2 | 3 | 4 | 5;
 
-enum MessageType {
-  Debug = 'debug',
-  Version = 'version',
-  Debugger = 'debugger',
-  Level = 'level',
-  Silence = 'silence',
-  Memory = 'memory'
-}
+export const DebugLevelNames: Record<DebugLevel, string> = {
+  1: 'Verbose',
+  2: 'Debug',
+  3: 'Info',
+  4: 'Warning',
+  5: 'Error'
+};
 
-interface ParsedMessage {
-  type: MessageType;
-  content: string;
-  cssClass?: string;
-  raw: string;
-}
+// Strongly typed protocol messages
+export interface ProtocolMessageI { type: 'I'; raw: string; }
+export interface ProtocolMessageV { type: 'V'; version: string; board: string; features: string; memory: number; debugEnabled: boolean; silenceEnabled: boolean; raw: string; }
+export interface ProtocolMessageL { type: 'L'; level: DebugLevel; raw: string; }
+export interface ProtocolMessageM { type: 'M'; free: number; used: number; total: number; raw: string; }
 
-interface ConnectionState {
-  status: 'disconnected' | 'connecting' | 'connected' | 'error';
-  address: string;
-  error?: string;
+export type ProtocolMessage = ProtocolMessageI | ProtocolMessageV | ProtocolMessageL | ProtocolMessageM;
+```
+
+#### Codec Interface (abstraction layer)
+```typescript
+// services/codec/MessageCodec.ts
+export type CommandType = 'v' | 'd' | 'i' | 'w' | 'e' | 'm' | '?' | 'reset' | 'debugger' | 'silence' | string;
+
+export interface IMessageCodec {
+  readonly name: string;
+  decode(rawMessage: string): ProtocolMessage | null;
+  encode(command: CommandType): string;
+  stripFormatting(text: string): string;
+  getFormattingClass(text: string): string;
 }
 ```
 
-#### 2.2 WebSocket Service
+#### RemoteDebug Codec Implementation
+```typescript
+// services/codec/RemoteDebugCodec.ts
+export class RemoteDebugCodec implements IMessageCodec {
+  readonly name = 'RemoteDebug';
+  
+  // Supports multiple message formats from devices:
+  // Format 1: [ANSI](LEVEL t:123ms) (func)(C0) message[ANSI]
+  // Format 2: (LEVEL t:123ms p:^456ms) (func)(core) message
+  // Format 3: HH:MM:SS.mmm [LEVEL] (func) (core) message
+  // Format 4: HH:MM:SS.mmm [LEVEL] (func)(core) message
+  
+  decode(rawMessage: string): ProtocolMessage | null;
+  encode(command: CommandType): string;
+  stripFormatting(text: string): string;
+  getFormattingClass(text: string): string;
+}
+```
+
+#### WebSocket Service
 ```typescript
 // services/WebSocketService.ts
-class WebSocketService {
+export class WebSocketService {
   private ws: WebSocket | null = null;
   private readonly port = 8232;
+  private readonly subprotocol = 'arduino';
   
   connect(address: string): Promise<void>;
   disconnect(): void;
   send(command: string): void;
+  isConnected(): boolean;
   
   onMessage: (handler: (data: string) => void) => void;
   onConnect: (handler: () => void) => void;
@@ -546,68 +630,47 @@ class WebSocketService {
 }
 ```
 
-#### 2.3 Message Parser
-```typescript
-// services/MessageParser.ts
-class MessageParser {
-  parse(rawMessage: string): ParsedMessage[];
-  parseANSI(text: string): { text: string; cssClass: string }[];
-  parseProtocol(text: string): ProtocolMessage | null;
-}
-```
-
-### Phase 3: UI Components
-
-#### 3.1 Component Architecture (Vanilla TypeScript)
+#### Console with Batched Rendering
 ```typescript
 // components/Console.ts
-class Console {
+export class Console {
   private container: HTMLElement;
   private autoScroll: boolean = true;
+  private messageBuffer: string[] = [];  // Batching for performance
   
   constructor(container: HTMLElement);
-  appendMessage(message: ParsedMessage): void;
+  appendMessage(content: string, cssClass?: string): void;
   clear(): void;
   setAutoScroll(enabled: boolean): void;
   copyToClipboard(): Promise<void>;
-  scrollToBottom(): void;
+  filter(term: string): void;
+  private flushBuffer(): void;  // Uses requestAnimationFrame
 }
 ```
 
-#### 3.2 State Management
-Simple reactive state without framework:
-```typescript
-// services/StateService.ts
-class StateService {
-  private state: AppState;
-  private listeners: Map<string, Function[]>;
-  
-  getState(): AppState;
-  setState(partial: Partial<AppState>): void;
-  subscribe(key: keyof AppState, handler: Function): void;
-}
-```
+### Features Implementation Status
 
-### Phase 4: Features Implementation
-
-#### Priority Order
-1. WebSocket connection/disconnection
-2. Message receiving and parsing
-3. Console rendering with colors
-4. Send commands
-5. Debug level switching
-6. Auto-scroll toggle
-7. Silence mode
-8. Memory refresh
-9. Clipboard copy
-10. Keyboard shortcuts
-11. Font size adjustment
-12. Filter functionality
-13. Fullscreen mode
-14. Toast notifications
-15. **Dark/Light theme toggle**
-16. **Customizable colors per log level**
-17. Version checking (optional for local use)
+| Feature | Status | Notes |
+|---------|--------|-------|
+| WebSocket connection/disconnection | ✅ Done | Port 8232, subprotocol "arduino" |
+| Message receiving and parsing | ✅ Done | Codec-based abstraction |
+| Console rendering with colors | ✅ Done | Level-based coloring |
+| Send commands | ✅ Done | Input + hotkeys |
+| Debug level switching | ✅ Done | v/d/i/w/e commands |
+| Auto-scroll toggle | ✅ Done | Ctrl+S |
+| Silence mode | ✅ Done | 's' command |
+| Memory refresh | ✅ Done | 'm' command |
+| Clipboard copy | ✅ Done | Copy all messages |
+| Keyboard shortcuts | ✅ Done | Mousetrap-based |
+| Font size adjustment | ✅ Done | A+/A- buttons |
+| Filter functionality | ✅ Done | Real-time text filter |
+| Batched rendering | ✅ Done | Prevents browser crash |
+| Dark/Light theme toggle | ✅ Done | ThemeService |
+| Settings panel | ✅ Done | Modal dialog |
+| Pause/Resume | ✅ Done | Buffer messages while paused |
+| Fullscreen mode | ⏳ Pending | Optional enhancement |
+| Toast notifications | ⏳ Pending | Optional enhancement |
+| Customizable colors | ⏳ Pending | Optional enhancement |
 
 ### Phase 5: Theming System
 
@@ -825,9 +888,21 @@ const ANSI_CODES = {
   '[0;30m[41m': 'profiler-red',    // Very slow
 };
 
-// Debug message format regex
-const DEBUG_MSG_REGEX = /^\[[\d;]+m\(([VDIWE])\s+t:(\d+)ms\)\s+\((\w+)\)\(C(\d)\)\s+(.+)$/;
-// Groups: 1=level, 2=timestamp, 3=function, 4=core, 5=message
+// Debug message format regexes (as implemented in RemoteDebugCodec)
+// Format 1: Standard with ANSI - (V t:123ms) (func)(C0) message
+const FORMAT1_REGEX = /^\(([VDIWE])\s+t:(\d+)ms\)\s+\((\w+)\)\(C(\d)\)\s+(.+)$/;
+
+// Format 2: With profiler time - (V t:123ms p:^456ms) (func)(core) message
+const FORMAT2_REGEX = /^\(([VDIWE])\s+t:(\d+)ms\s+p:\^?\d+ms\)\s+\((\w+)\)\((\w+)\)\s+(.+)$/;
+
+// Format 3: HH:MM:SS.mmm timestamp - 12:34:56.789 [V] (func) (C0) message
+const FORMAT3_REGEX = /^\d{2}:\d{2}:\d{2}\.\d{3}\s+\[([VDIWE])\]\s+\((\w+)\)\s+\(C?(\d)\)\s+(.+)$/;
+
+// Format 4: Alternative timestamp - 12:34:56.789 [V] (func)(C0) message
+const FORMAT4_REGEX = /^\d{2}:\d{2}:\d{2}\.\d{3}\s+\[([VDIWE])\]\s+\((\w+)\)\(C?(\d)\)\s+(.+)$/;
+
+// Groups for Format 1-2: 1=level, 2=timestamp, 3=function, 4=core, 5=message
+// Groups for Format 3-4: 1=level, 2=function, 3=core, 4=message
 ```
 
 ## Appendix B: CSS Color Variables
@@ -871,4 +946,7 @@ const DEBUG_MSG_REGEX = /^\[[\d;]+m\(([VDIWE])\s+t:(\d+)ms\)\s+\((\w+)\)\(C(\d)\
 ---
 
 *Document created: December 6, 2025*
-*For: RemoteDebugApp modernization project*
+*Last updated: December 2025*
+*For: WSTerm (formerly RemoteDebugApp) modernization project*
+*Implementation Status: Functional MVP with codec abstraction layer*
+

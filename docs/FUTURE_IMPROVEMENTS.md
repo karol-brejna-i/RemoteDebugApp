@@ -1,6 +1,25 @@
-# Future Improvements
+ # Future Improvements
 
 This document outlines potential enhancements for RemoteDebugApp beyond the initial reimplementation. These features are organized by priority and complexity.
+
+---
+
+## Improvement Status Overview
+
+| Improvement | Priority | Status | Notes |
+|-------------|----------|--------|-------|
+| Session Recording & Playback | High | Not started | Record, export, and replay sessions |
+| Enhanced Filtering & Search | High | Not started | Regex, multi-filter, level filtering |
+| Command History & Favorites | Medium | Not started | Persistent history, favorites, aliases |
+| Connection Address History | Medium | Not started | Recent addresses with nicknames |
+| Metrics Dashboard | Medium | Not started | Charts for memory, rate, uptime |
+| Multi-Device Support | High | Not started | Multiple connections and unified views |
+| Message Parsing Enhancements | Medium | Not started | JSON formatting, grouping, timestamps |
+| Notifications & Alerts | Medium | Not started | Desktop alerts and custom rules |
+| Export & Integration | Medium | Not started | Export to TXT/JSON/CSV/HTML |
+| Connection Resilience | High | Not started | Auto-reconnect and quality indicators |
+| PWA Support | Low | Not started | Installable app and offline support |
+| Accessibility Improvements | Medium | Not started | ARIA, high contrast, keyboard navigation |
 
 ---
 
